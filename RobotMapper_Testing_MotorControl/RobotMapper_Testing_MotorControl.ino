@@ -27,11 +27,12 @@ float  Lidar_Distance = 0;
 // -----------------END Globals---------------------------
 
 void setup() {
+  Serial.begin (9600);
+  Serial.println ("Setup Started");
   pinMode(motor1Pin1, OUTPUT);
   pinMode(motor1Pin2, OUTPUT);
   pinMode(motor2Pin1, OUTPUT);
   pinMode(motor2Pin2, OUTPUT);
-  Serial.begin (9600);
   lidarLite.begin(0, true); // Set configuration to default and I2C to 400 kHz
   lidarLite.configure(5);// Change this number to try out alternate conf
   myservo.attach(6);
@@ -50,8 +51,8 @@ void loop() {
         if (opCode == 0){
             return;
         }
-        firstDigitOpcode = opCode/100;
-        secondDigitOpcode = (opCode-firstDigitOpcode*100);
+        firstDigitOpcode = opCode/10000;
+        secondDigitOpcode = (opCode-firstDigitOpcode*10000);
         Serial.println (firstDigitOpcode); 
         Serial.println (secondDigitOpcode); 
         populateValues( firstDigitOpcode, secondDigitOpcode); 
@@ -59,10 +60,14 @@ void loop() {
 }
 
 float populateValues (float magnet, float height){
-    float magnetval = dynamicHeading (magnet);
-    float Altitudes = moveServoAngle (height);
-    float LazarDist = getLidarDistance();
-    dataOutPitchAltDist(magnetval, Altitudes, LazarDist);
+    magnet = magnet/10.0;
+    height = height/10.0;
+    Serial.println ((String)"Magnet Value = " +magnet);
+    Serial.println ((String)"Height Value = " +height);
+//    float magnetval = dynamicHeading (magnet);
+//    float Altitudes = moveServoAngle (height);
+//    float LazarDist = getLidarDistance();
+//    dataOutPitchAltDist(magnetval, Altitudes, LazarDist);
 }
 
 void dataOutPitchAltDist(float Mag_value, float Alt_Angle,float Lidar_Distance){
@@ -73,7 +78,7 @@ float dynamicHeading(float desiredPosition){
     int lowPWMSpeed = 100;
     float distanceFromTarget;
     float deadBand = 2;
-    distanceFromTarget = (desiredPosition - getLidarDistance());
+    distanceFromTarget = (desiredPosition - getHeading());
     while (abs(distanceFromTarget) > deadBand)
     {
      if (distanceFromTarget >= 15){
@@ -83,7 +88,7 @@ float dynamicHeading(float desiredPosition){
           digitalWrite(motor1Pin1, LOW);  
           digitalWrite(motor1Pin2, LOW);
           delay(7); 
-          distanceFromTarget = desiredPosition - getLidarDistance();
+          distanceFromTarget = desiredPosition - getHeading();
         }
      if (distanceFromTarget <= -15){
 
@@ -93,7 +98,7 @@ float dynamicHeading(float desiredPosition){
           digitalWrite(motor1Pin1, LOW);  
           digitalWrite(motor1Pin2, LOW);
           delay(7); 
-          distanceFromTarget = desiredPosition - getLidarDistance();
+          distanceFromTarget = desiredPosition - getHeading();
           
         }
         if ((distanceFromTarget < 15)& (distanceFromTarget >= 4)){
@@ -103,7 +108,7 @@ float dynamicHeading(float desiredPosition){
           digitalWrite(motor1Pin1, LOW);  
           digitalWrite(motor1Pin2, LOW);
           delay(20); 
-          distanceFromTarget = desiredPosition - getLidarDistance();
+          distanceFromTarget = desiredPosition - getHeading();
         }
      if ((distanceFromTarget <= -4)& (distanceFromTarget > -15)){
           digitalWrite(motor1Pin1, HIGH); 
@@ -112,7 +117,7 @@ float dynamicHeading(float desiredPosition){
           digitalWrite(motor1Pin1, LOW);  
           digitalWrite(motor1Pin2, LOW);
           delay(20); 
-          distanceFromTarget = desiredPosition - getLidarDistance();
+          distanceFromTarget = desiredPosition - getHeading();
         }
         
        if ((distanceFromTarget <= 4) & (distanceFromTarget > 0)){
@@ -122,7 +127,7 @@ float dynamicHeading(float desiredPosition){
           digitalWrite(motor1Pin1, LOW);  
           digitalWrite(motor1Pin2, LOW);
           delay(50); 
-          distanceFromTarget = desiredPosition - getLidarDistance();
+          distanceFromTarget = desiredPosition - getHeading();
         }
     if ((distanceFromTarget >= -4)& (distanceFromTarget < 0)){
           digitalWrite(motor1Pin1, LOW); 
@@ -131,29 +136,13 @@ float dynamicHeading(float desiredPosition){
           digitalWrite(motor1Pin1, LOW);  
           digitalWrite(motor1Pin2, LOW);
           delay(50); 
-          distanceFromTarget = desiredPosition - getLidarDistance();
+          distanceFromTarget = desiredPosition - getHeading();
         }
     } 
-    distanceFromTarget = desiredPosition - getLidarDistance(); 
+    distanceFromTarget = desiredPosition - getHeading(); 
 }
 
-void moveRight(int timeDelay){
-  digitalWrite(motor1Pin1, HIGH); 
-  digitalWrite(motor1Pin2, LOW);   
-  delay(timeDelay);              
-  digitalWrite(motor1Pin1, LOW);  
-  digitalWrite(motor1Pin2, LOW);
-}
-
-void moveLeft(int timeDelay){
-  digitalWrite(motor1Pin1, LOW); 
-  digitalWrite(motor1Pin2, HIGH);   
-  delay(timeDelay);              
-  digitalWrite(motor1Pin1, LOW);  
-  digitalWrite(motor1Pin2, LOW);
-}
-
-float getLidarDistance (){
+float getHeadingCheck (){
   float heading ;
   heading = getHeading();
   while (heading==0){
@@ -183,122 +172,30 @@ moveToAngle = 180 .. 180 degrees down from vertical
     return getAcceleration();
 }
 
-//void stateMachine( int Code, int secondDigit){ 
-//    switch (Code) {
-//        case 0:
-//            //Serial.write(Code);
-//            break;
-//          
-//        case 1:    // Get Distance
-//            Serial.println(Code);
-//            Serial.println(getLidarDistance ());
-//            break;
-//          
-//        case 2:    // Move Right
-//            //Serial.println(Code,secondDigit);
-//            moveRight(secondDigit);
-//            myservo.write(44);
-//            break;
-//          
-//        case 3:  // Move Left
-//            //Serial.println(Code,secondDigit);
-//            moveLeft(secondDigit);
-//            myservo.write(88);
-//            break;
-//                      
-//        case 4:  // Move UP
-//            Serial.println(Code,thirdDigit);
-//            break; 
-//                      
-//        case 5:  // Move Down
-//            Serial.println(moveUntilHeading(100));
-//            break; 
-//
-//        case 6:  // Move Down
-//            Serial.println(getAcceleration());
-//            break;
-//            
-//        case 7:  // Move Down
-//            Serial.println(getHeading());
-//            break; 
-//                   
-//        case 8:  // Move Down
-//            Serial.println(getHeading());
-//            break; 
-//                  
-//        default:
-//            Serial.println("default");
-//            break;
-//    }
-//}
-
-//void continuousScanner (){
-//  int dist;
-//  digitalWrite(motor1Pin1, HIGH); 
-//  digitalWrite(motor1Pin2, LOW);   
-//  delay(2);              
-//  digitalWrite(motor1Pin1, LOW);  
-//  digitalWrite(motor1Pin2, LOW);
-//  
-// for (pos = 50; pos <= 100; pos += 10) { 
-//    myservo.write(pos);              
-//    delay(motorPauseDelay);
-//    dist = getLidarDistance(); 
-//    Serial.print(dist);     
-//    Serial.println(" cm");
-//  }
-//  for (pos = 100; pos >= 50; pos -= 10) { 
-//    myservo.write(pos);   
-//    delay(motorPauseDelay);            
-//    dist = getLidarDistance();      
-//    Serial.print(dist);
-//    Serial.println(" cm");
-//  }
-//}
+float getLidarDistance (){
+  int val1 = lidarLite.distance();
+  int val2 = lidarLite.distance();
+  int val3 = lidarLite.distance();
+  int val4 = lidarLite.distance();
+  int val5 = lidarLite.distance();
+  int val6 = lidarLite.distance();
+  int val7 = lidarLite.distance();
+  int val8 = lidarLite.distance();  
+  int val9 = lidarLite.distance();
+  int val10 = lidarLite.distance();
+  int val11 = lidarLite.distance();
+  int val12 = lidarLite.distance();
+  float aveVal = (val1+val2+val3+val12+val4+val5+val6+val7+val8+val9+val10+val11)/12.0;
+  return (aveVal);
+}
 
 
 
-//float moveUntilHeading(float desiredPosition){
-//    int lowPWMSpeed = 100;
-//    while (abs(desiredPosition - getLidarDistance()) > 20)
-//    {
-//     // Serial.println("Debug - While outer loop"); 
-//      
-//      if (desiredPosition - getLidarDistance() > 0){
-//          digitalWrite(motor1Pin1, LOW); 
-//          digitalWrite(motor1Pin2, HIGH);  
-//          delay(1);              
-//          digitalWrite(motor1Pin1, LOW);  
-//          digitalWrite(motor1Pin2, LOW);
-//        }
-//      if (desiredPosition - getLidarDistance() < 0){
-//          digitalWrite(motor1Pin1, HIGH); 
-//          digitalWrite(motor1Pin2, LOW);   
-//          delay(1);              
-//          digitalWrite(motor1Pin1, LOW);  
-//          digitalWrite(motor1Pin2, LOW);
-//        }
-//     
-//    }  
-//   while (abs(desiredPosition - getLidarDistance()) > .1)
-//    {
-////      Serial.println("Debug - While small outer loop"); 
-////      Serial.println(getHeading());
-//      if (desiredPosition - getLidarDistance() > 0){
-//          digitalWrite(motor1Pin1, LOW); 
-//          digitalWrite(motor1Pin2, HIGH);  
-//          delay(1);              
-//          digitalWrite(motor1Pin1, LOW);  
-//          digitalWrite(motor1Pin2, LOW);
-//          delay(20); 
-//        }
-//      if (desiredPosition - getLidarDistance() < 0){
-//          digitalWrite(motor1Pin1, HIGH); 
-//          digitalWrite(motor1Pin2, LOW);   
-//          delay(1);              
-//          digitalWrite(motor1Pin1, LOW);  
-//          digitalWrite(motor1Pin2, LOW);
-//          delay(20); 
-//        }
-//    }
-//}
+
+
+
+
+
+
+
+    

@@ -37,7 +37,7 @@ void loop()
   digitalWrite(PanPWM_1, 0);
   digitalWrite(PanPWM_2, 0);
   
-  Serial.print(getLidarDistnace());
+  Serial.print(getLidarDistance());
   Serial.println(" cm");
   delay(1000);
   
@@ -50,7 +50,7 @@ void loop()
   delay(50);
 }
 
-float getLidarDistnace ()
+float getLidarDistance ()
 {
   int val1 = lidarLite.distance();
   int val2 = lidarLite.distance();

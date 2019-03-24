@@ -43,10 +43,7 @@ void loop() {
         }
         firstDigitOpcode = opCode/10000;
         secondDigitOpcode = (opCode-firstDigitOpcode*10000);
-        //Serial.println(opCode);
-        //Serial.println (firstDigitOpcode); 
-        //Serial.println (secondDigitOpcode) 
-      }
+    }
       if (firstDigitOpcode == 1111){
           digitalWrite(17, HIGH);   // turn the LED on (HIGH is the voltage level)
           delay(500);                       // wait for a second
