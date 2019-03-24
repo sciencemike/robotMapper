@@ -27,7 +27,7 @@ float  Lidar_Distance = 0;
 // -----------------END Globals---------------------------
 
 void setup() {
-  Serial.begin (9600);
+  Serial.begin (230400);
   Serial.println ("Setup Started");
   pinMode(motor1Pin1, OUTPUT);
   pinMode(motor1Pin2, OUTPUT);
@@ -41,6 +41,8 @@ void setup() {
 }
 
 void loop() {
+    //Serial.println(getHeadingCheck());
+    //Serial.println(lidarLite.distance());
     float opCode = 0;
     int firstDigitOpcode = 0;
     int secondDigitOpcode = 0;
@@ -51,8 +53,18 @@ void loop() {
         if (opCode == 0){
             return;
         }
+        Serial.println(opCode);
         firstDigitOpcode = opCode/10000;
         secondDigitOpcode = (opCode-firstDigitOpcode*10000);
+        
+//        if ((firstDigitOpcode <= 0) || (firstDigitOpcode >= 359.9))   {
+//            Serial.println (String("Error in First Digit" + firstDigitOpcode));
+//            firstDigitOpcode = 100;
+//        }
+//        if ((secondDigitOpcode <= 10) || (secondDigitOpcode >= 160))   {
+//            Serial.println (String("Error in Second Digit" + secondDigitOpcode));
+//            secondDigitOpcode = 90;
+        //}
         Serial.println (firstDigitOpcode); 
         Serial.println (secondDigitOpcode); 
         populateValues( firstDigitOpcode, secondDigitOpcode); 
@@ -64,10 +76,10 @@ float populateValues (float magnet, float height){
     height = height/10.0;
     Serial.println ((String)"Magnet Value = " +magnet);
     Serial.println ((String)"Height Value = " +height);
-//    float magnetval = dynamicHeading (magnet);
-//    float Altitudes = moveServoAngle (height);
-//    float LazarDist = getLidarDistance();
-//    dataOutPitchAltDist(magnetval, Altitudes, LazarDist);
+    float magnetval = dynamicHeading (magnet);
+    float Altitudes = moveServoAngle (height);
+    float LazarDist = getLidarDistance();
+    dataOutPitchAltDist(magnetval, Altitudes, LazarDist);
 }
 
 void dataOutPitchAltDist(float Mag_value, float Alt_Angle,float Lidar_Distance){
@@ -77,8 +89,8 @@ void dataOutPitchAltDist(float Mag_value, float Alt_Angle,float Lidar_Distance){
 float dynamicHeading(float desiredPosition){
     int lowPWMSpeed = 100;
     float distanceFromTarget;
-    float deadBand = 2;
-    distanceFromTarget = (desiredPosition - getHeading());
+    float deadBand = 4;
+    distanceFromTarget = (desiredPosition - getHeadingCheck());
     while (abs(distanceFromTarget) > deadBand)
     {
      if (distanceFromTarget >= 15){
@@ -88,7 +100,7 @@ float dynamicHeading(float desiredPosition){
           digitalWrite(motor1Pin1, LOW);  
           digitalWrite(motor1Pin2, LOW);
           delay(7); 
-          distanceFromTarget = desiredPosition - getHeading();
+          distanceFromTarget = desiredPosition - getHeadingCheck();
         }
      if (distanceFromTarget <= -15){
 
@@ -98,7 +110,7 @@ float dynamicHeading(float desiredPosition){
           digitalWrite(motor1Pin1, LOW);  
           digitalWrite(motor1Pin2, LOW);
           delay(7); 
-          distanceFromTarget = desiredPosition - getHeading();
+          distanceFromTarget = desiredPosition - getHeadingCheck();
           
         }
         if ((distanceFromTarget < 15)& (distanceFromTarget >= 4)){
@@ -108,7 +120,7 @@ float dynamicHeading(float desiredPosition){
           digitalWrite(motor1Pin1, LOW);  
           digitalWrite(motor1Pin2, LOW);
           delay(20); 
-          distanceFromTarget = desiredPosition - getHeading();
+          distanceFromTarget = desiredPosition - getHeadingCheck();
         }
      if ((distanceFromTarget <= -4)& (distanceFromTarget > -15)){
           digitalWrite(motor1Pin1, HIGH); 
@@ -117,7 +129,7 @@ float dynamicHeading(float desiredPosition){
           digitalWrite(motor1Pin1, LOW);  
           digitalWrite(motor1Pin2, LOW);
           delay(20); 
-          distanceFromTarget = desiredPosition - getHeading();
+          distanceFromTarget = desiredPosition - getHeadingCheck();
         }
         
        if ((distanceFromTarget <= 4) & (distanceFromTarget > 0)){
@@ -127,7 +139,7 @@ float dynamicHeading(float desiredPosition){
           digitalWrite(motor1Pin1, LOW);  
           digitalWrite(motor1Pin2, LOW);
           delay(50); 
-          distanceFromTarget = desiredPosition - getHeading();
+          distanceFromTarget = desiredPosition - getHeadingCheck();
         }
     if ((distanceFromTarget >= -4)& (distanceFromTarget < 0)){
           digitalWrite(motor1Pin1, LOW); 
@@ -136,10 +148,11 @@ float dynamicHeading(float desiredPosition){
           digitalWrite(motor1Pin1, LOW);  
           digitalWrite(motor1Pin2, LOW);
           delay(50); 
-          distanceFromTarget = desiredPosition - getHeading();
+          distanceFromTarget = desiredPosition - getHeadingCheck();
         }
     } 
-    distanceFromTarget = desiredPosition - getHeading(); 
+    //distanceFromTarget = desiredPosition - getHeadingCheck();
+    return getHeadingCheck(); 
 }
 
 float getHeadingCheck (){

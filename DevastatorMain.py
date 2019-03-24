@@ -19,18 +19,19 @@ import time
 ser = serial.Serial("COM35", baudrate = 9600, timeout = 200000)
 print ("ready To Go")
 # print (b'11112222')
-myInt = b'11112222'
+myInt = b'11110600'
 print (myInt)
-ser.write(myInt)     # write a string
+#ser.write(myInt) 
+ser.write(b'{}'.format(myInt))
+
+#print (int(myInt))
+
+# time.sleep(2)
+# myInt = b'10011100'
+# print (myInt)
+# ser.write(myInt) 
+
 ser.close()   
-
-
-###
-# myInt = 11112222
-# myByte = b'0x%x'%myInt
-# print(myByte)
-# ser.write(b'myInt')
-
 
 ####
 
