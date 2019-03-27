@@ -4,10 +4,6 @@
 Created on Tue Aug 14 13:55:02 2018
 
 @author: super
-This code reads in the value of the pins.
-Then it tells where it is on the gui.
-For example if the focus is on RamFluor button.
-If user hits enter or back.  The system checks forward or back.
 
 """
 import sys
