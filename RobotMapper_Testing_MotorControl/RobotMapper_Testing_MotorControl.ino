@@ -82,7 +82,7 @@ float populateValues (float magnet, float height){
 }
 
 void dataOutPitchAltDist(float Mag_value, float Alt_Angle,float Lidar_Distance){
-  Serial.println((String)Mag_value+':'+Alt_Angle+':'+Lidar_Distance+"................");
+  Serial.println((String)Mag_value+':'+Alt_Angle+':'+Lidar_Distance+"           ");
 }
 
 float dynamicHeading(float desiredPosition){
