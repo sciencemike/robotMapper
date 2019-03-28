@@ -12,13 +12,25 @@ import threading
 import time
 
 #ser = serial.Serial("/dev/ttyACM0", baudrate = 9600, timeout = 200000)
-ser = serial.Serial("COM35", baudrate = 9600, timeout = 200000)
+ser = serial.Serial("COM35", baudrate = 9600, timeout = 5)
 print ("ready To Go")
 # print (b'11112222')
 myInt = b'11110600'
 print (myInt)
 #ser.write(myInt) 
-ser.write(b'{}'.format(myInt))
+ser.write(myInt)
+arduinoData = str(ser.read(20))
+
+print (arduinoData)
+arduinoData1 = arduinoData.replace('b','')
+#arduinoData2 = arduinoData1.strip('\"')
+arduinoData3 = (arduinoData1.split(':'))
+value1 = float(arduinoData3[0].strip('\''))
+value2 = float(arduinoData3[1])
+value3 = float(arduinoData3[2].strip('\''))
+print (value1)
+print (value2)
+print (value3)
 
 #print (int(myInt))
 

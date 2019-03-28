@@ -53,7 +53,6 @@ void loop() {
         if (opCode == 0){
             return;
         }
-        Serial.println(opCode);
         firstDigitOpcode = opCode/10000;
         secondDigitOpcode = (opCode-firstDigitOpcode*10000);
         
@@ -65,8 +64,8 @@ void loop() {
 //            Serial.println (String("Error in Second Digit" + secondDigitOpcode));
 //            secondDigitOpcode = 90;
         //}
-        Serial.println (firstDigitOpcode); 
-        Serial.println (secondDigitOpcode); 
+        //Serial.println (firstDigitOpcode); 
+        //Serial.println (secondDigitOpcode); 
         populateValues( firstDigitOpcode, secondDigitOpcode); 
       }
 }
@@ -74,8 +73,8 @@ void loop() {
 float populateValues (float magnet, float height){
     magnet = magnet/10.0;
     height = height/10.0;
-    Serial.println ((String)"Magnet Value = " +magnet);
-    Serial.println ((String)"Height Value = " +height);
+    //Serial.println ((String)"Magnet Value = " +magnet);
+    //Serial.println ((String)"Height Value = " +height);
     float magnetval = dynamicHeading (magnet);
     float Altitudes = moveServoAngle (height);
     float LazarDist = getLidarDistance();
@@ -83,7 +82,7 @@ float populateValues (float magnet, float height){
 }
 
 void dataOutPitchAltDist(float Mag_value, float Alt_Angle,float Lidar_Distance){
-  Serial.println((String)"Head_return={'MagValue':"+Mag_value+",'AltAngle':"+Alt_Angle+",'LidarDistance':"+Lidar_Distance+"}");
+  Serial.println((String)Mag_value+':'+Alt_Angle+':'+Lidar_Distance+"................");
 }
 
 float dynamicHeading(float desiredPosition){
