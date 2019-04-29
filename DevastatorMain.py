@@ -14,8 +14,10 @@ import math
 
 panValue = 110
 tiltValue = 110
+
 def getVectorData():
 	arduinoData = str(ser.read(20))
+	print (arduinoData)
 	arduinoData1 = arduinoData.replace('b','')
 	arduinoData3 = (arduinoData1.split(':'))
 	value1 = float(arduinoData3[0].strip('\''))
@@ -45,8 +47,9 @@ def createIntCommand(pan, tilt):
 	#//myIntByte =  str.encode(myInt)
 	print (myInt)
 	return (myInt)
+
 #ser = serial.Serial("/dev/ttyACM0", baudrate = 9600, timeout = 200000)
-ser = serial.Serial("COM35", baudrate = 9600, timeout = 5)
+ser = serial.Serial("COM8", baudrate = 230400, timeout = 5)
 print ("ready To Go")
 #myInt = b'11110600'
 ser.write(createIntCommand( panValue, tiltValue))

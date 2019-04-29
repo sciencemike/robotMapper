@@ -38,11 +38,11 @@ void setup() {
   myservo.attach(6);
   initSensors();
   Serial.println ("Setup Completed");
+  
 }
 
 void loop() {
-    //Serial.println(getHeadingCheck());
-    //Serial.println(lidarLite.distance());
+  
     float opCode = 0;
     int firstDigitOpcode = 0;
     int secondDigitOpcode = 0;
@@ -55,17 +55,7 @@ void loop() {
         }
         firstDigitOpcode = opCode/10000;
         secondDigitOpcode = (opCode-firstDigitOpcode*10000);
-        
-//        if ((firstDigitOpcode <= 0) || (firstDigitOpcode >= 359.9))   {
-//            Serial.println (String("Error in First Digit" + firstDigitOpcode));
-//            firstDigitOpcode = 100;
-//        }
-//        if ((secondDigitOpcode <= 10) || (secondDigitOpcode >= 160))   {
-//            Serial.println (String("Error in Second Digit" + secondDigitOpcode));
-//            secondDigitOpcode = 90;
-        //}
-        //Serial.println (firstDigitOpcode); 
-        //Serial.println (secondDigitOpcode); 
+
         populateValues( firstDigitOpcode, secondDigitOpcode); 
       }
 }
